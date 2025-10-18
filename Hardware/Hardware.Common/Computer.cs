@@ -23,7 +23,7 @@ namespace Setup.Common
 
         public Software Software { get; set; }
 
-        public List<Periphery> Periphery { get; set; }
+        public List<Periphery> Periphery{ get; set; }
 
         public event ComponentChangedEventHandler Upgraded;
 
@@ -74,6 +74,36 @@ namespace Setup.Common
 
         // Статичний метод
         public static int GetCount() => Count;
+
+        // Метод рандомної генерації комп'ютерів
+        public static Computer GenerateRandom()
+        {
+            var rand = new Random();
+
+            var cpu = CPU.GenerateRandom();
+            var gpu = GPU.GenerateRandom();
+            var software = Software.GenerateRandom();
+
+            // Генеруємо кілька пристроїв периферії
+            int perCount = rand.Next(1, 4);
+            var peripheryList = new List<Periphery>();
+            for (int i = 0; i < perCount; i++)
+                peripheryList.Add(Setup.Common.Periphery.GenerateRandom());
+
+            // Формуємо комп'ютер
+            return new Computer
+            {
+                Id = Guid.NewGuid(),
+                Name = $"PC-{rand.Next(1000, 9999)}",
+                CPU = cpu,
+                GPU = gpu,
+                RAM = rand.Next(8, 65),
+                Storage = rand.Next(256, 2049),
+                Software = software,
+                Periphery = peripheryList
+            };
+        }
+
     }
 
     public static class ComputerExtensions

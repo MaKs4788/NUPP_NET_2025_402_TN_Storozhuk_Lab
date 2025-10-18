@@ -43,6 +43,23 @@ namespace Setup.Common
             Console.WriteLine($"OS: {OS}, Antivirus: {Antivirus}, Version: {OSVersion}");
         }
 
+        // Метод рандомної генерації ПЗ
+        public static Software GenerateRandom()
+        {
+            var rand = new Random();
+            var systems = new[] { "Windows", "Linux" };
+            var versions = new[] { "10", "11", "Ubuntu 24.04"};
+            var antivirus = new[] { "ESET", "Malwarebytes", "Bitdefender" };
+
+       
+
+            return new Software
+            {
+                OS = systems[rand.Next(systems.Length)],
+                OSVersion = versions[rand.Next(versions.Length)]
+            };
+        }
+
 
     }
 }
