@@ -41,5 +41,21 @@ namespace Setup.Common
         {
             Console.WriteLine($"Device: {DeviceType}, Brand: {Brand}, Connection: {ConnectionType}");
         }
+
+        // Метод рандомної генерації периферії
+        public static Periphery GenerateRandom()
+        {
+            var rand = new Random();
+            var types = new[] { "Keyboard", "Mouse", "Headset"};
+            var brands = new[] { "Logitech", "Razer", "Hator"};
+            var connections = new[] { "USB", "Bluetooth", "Wireless"};
+
+            return new Periphery(
+                types[rand.Next(types.Length)],
+                brands[rand.Next(brands.Length)],
+                connections[rand.Next(connections.Length)]
+            );
+        }
+
     }
 }
