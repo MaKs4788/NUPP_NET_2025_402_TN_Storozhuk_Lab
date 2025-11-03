@@ -7,7 +7,7 @@ namespace UnitTest
         [Fact]
         public async Task CreateAsync_ShouldAddComputer()
         {
-            var service = new ComputerService();
+            var service = new ComputerService<Computer>();
             var computer = Computer.GenerateRandom();
 
             bool result = await service.CreateAsync(computer);
@@ -20,7 +20,7 @@ namespace UnitTest
         [Fact]
         public async Task ReadAsync_ShouldReturnComputerById()
         {
-            var service = new ComputerService();
+            var service = new ComputerService<Computer>();
             var computer = Computer.GenerateRandom();
             await service.CreateAsync(computer);
 
@@ -33,7 +33,7 @@ namespace UnitTest
         [Fact]
         public async Task UpdateAsync_ShouldUpdateComputer()
         {
-            var service = new ComputerService();
+            var service = new ComputerService<Computer>();
             var computer = Computer.GenerateRandom();
             await service.CreateAsync(computer);
 
@@ -48,7 +48,7 @@ namespace UnitTest
         [Fact]
         public async Task RemoveAsync_ShouldDeleteComputer()
         {
-            var service = new ComputerService();
+            var service = new ComputerService<Computer>();
             var computer = Computer.GenerateRandom();
             await service.CreateAsync(computer);
 

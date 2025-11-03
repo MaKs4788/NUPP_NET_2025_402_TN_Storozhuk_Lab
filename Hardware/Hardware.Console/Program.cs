@@ -4,7 +4,7 @@ using System.Text;
 using Setup.Common;
 using Setup.Console;
 Console.OutputEncoding = UTF8Encoding.UTF8;
-ICrudServiceAsync<Computer> computerService = new ComputerService();
+ICrudServiceAsync<Computer> computerService = new ComputerService<Computer>();
 await computerService.LoadAsync();
 ConsoleService consoleService = new ConsoleService();
 

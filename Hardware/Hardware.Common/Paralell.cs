@@ -11,19 +11,17 @@ namespace Setup.Common
         // Метод генерації комп'ютерів
         public static async Task GenerateComputersAsync(ICrudServiceAsync<Computer> service, int count)
         {
-            var tasks = new List<Task>();
+            var range = Enumerable.Range(0, count);
 
-            for (int i = 0; i < count; i++)
+            await Parallel.ForEachAsync(range, new ParallelOptions
             {
-                int idx = i;
-                tasks.Add(Task.Run(async () =>
-                {
-                    var comp = Computer.GenerateRandom();
-                    await service.CreateAsync(comp);
-                }));
-            }
-
-            await Task.WhenAll(tasks);
+                MaxDegreeOfParallelism = Environment.ProcessorCount 
+            },
+            async (i, token) =>
+            {
+                var comp = Computer.GenerateRandom();
+                await service.CreateAsync(comp);
+            });
         }
 
         // Метод створення статистики
