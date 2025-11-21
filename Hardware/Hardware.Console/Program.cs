@@ -1,27 +1,49 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Text;
 using Setup.Common;
 using Setup.Console;
+using Setup.Infrastructure;
+using Setup.Infrastructure.Repositories;
+using Setup.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using Setup.Infrastructure.Models;
+
 Console.OutputEncoding = UTF8Encoding.UTF8;
+
+var dbContext = new SetupContext();
+dbContext.Database.EnsureCreated();
+
 ICrudServiceAsync<Computer> computerService = new ComputerService<Computer>();
+
+
 await computerService.LoadAsync();
+
 ConsoleService consoleService = new ConsoleService();
 
-while (true)
+
+/*while (true)
 {
-    Console.WriteLine("\n=== Меню ===");
-    Console.WriteLine("1 - Створити комп'ютер");
-    Console.WriteLine("2 - Показати всі комп'ютери");
-    Console.WriteLine("3 - Апгрейд RAM комп'ютера");
-    Console.WriteLine("4 - Оновити версію ОС");
-    Console.WriteLine("5 - Перейменувати периферійний пристрій");
-    Console.WriteLine("6 - Фабрика комп'ютерів");
-    Console.WriteLine("7 - Детальний перегляд комп'ютера");
-    Console.WriteLine("8 - Видалити комп'ютер");
-    Console.WriteLine("9 - Зберегти зміни");
-    Console.WriteLine("0 - Вихід");
-    Console.Write("Ваш вибір: ");
+    Console.WriteLine("\n=== РњРµРЅСЋ ===");
+    Console.WriteLine("1 - РЎС‚РІРѕСЂРёС‚Рё РєРѕРјРї'СЋС‚РµСЂ");
+    Console.WriteLine("2 - РџРѕРєР°Р·Р°С‚Рё РІСЃС– РєРѕРјРї'СЋС‚РµСЂРё");
+    Console.WriteLine("3 - РђРїРіСЂРµР№Рґ RAM РєРѕРјРї'СЋС‚РµСЂР°");
+    Console.WriteLine("4 - РћРЅРѕРІРёС‚Рё РІРµСЂСЃС–СЋ РћРЎ");
+    Console.WriteLine("5 - РџРµСЂРµР№РјРµРЅСѓРІР°С‚Рё РїРµСЂРёС„РµСЂС–Р№РЅРёР№ РїСЂРёСЃС‚СЂС–Р№");
+    Console.WriteLine("6 - Р¤Р°Р±СЂРёРєР° РєРѕРјРї'СЋС‚РµСЂС–РІ");
+    Console.WriteLine("7 - Р”РµС‚Р°Р»СЊРЅРёР№ РїРµСЂРµРіР»СЏРґ РєРѕРјРї'СЋС‚РµСЂР°");
+    Console.WriteLine("8 - Р’РёРґР°Р»РёС‚Рё РєРѕРјРї'СЋС‚РµСЂ");
+    Console.WriteLine("9 - Р—Р±РµСЂРµРіС‚Рё Р·РјС–РЅРё");
+    *//*Console.WriteLine("10 - РЎС‚РІРѕСЂРёС‚Рё РїРѕРІРЅРёР№ РєРѕРјРї'СЋС‚РµСЂ РІ Р‘Р”");
+    Console.WriteLine("11 - РџРµСЂРµРіР»СЏРЅСѓС‚Рё РІСЃС– РєРѕРјРї'СЋС‚РµСЂРё Р· Р‘Р”");
+    Console.WriteLine("12 - РћРЅРѕРІРёС‚Рё CPU РІ Р‘Р”");
+    Console.WriteLine("13 - Р”РѕРґР°С‚Рё РїРµСЂРёС„РµСЂС–СЋ РґРѕ РєРѕРјРї'СЋС‚РµСЂР° (Р‘Р”)");
+    Console.WriteLine("14 - Р’РёРґР°Р»РёС‚Рё РєРѕРјРї'СЋС‚РµСЂ Р· Р‘Р”");
+    Console.WriteLine("15 - РџРѕС€СѓРє РєРѕРјРї'СЋС‚РµСЂС–РІ Р·Р° РїР°СЂР°РјРµС‚СЂР°РјРё (Р‘Р”)");
+    Console.WriteLine("16 - РЎС‚Р°С‚РёСЃС‚РёРєР° Р‘Р”");*//*
+    Console.WriteLine("0 - Р’РёС…С–Рґ");
+    Console.Write("Р’Р°С€ РІРёР±С–СЂ: ");
+
     var choice = Console.ReadLine();
 
     switch (choice)
@@ -42,7 +64,7 @@ while (true)
             await consoleService.RenamePeripheryAsync(computerService);
             break;
         case "6":
-            await consoleService.GenerateComputersAsync(computerService);// Фабрика   /*Console.WriteLine($"За весь час існування сервісу було створено {Computer.GetCount()} комп'ютерів");*/
+            await consoleService.GenerateComputersAsync(computerService);
             break;
         case "7":
             await consoleService.ShowComputerDetailsAsync(computerService);
@@ -56,9 +78,82 @@ while (true)
         case "0":
             return;
         default:
-            Console.WriteLine("Невірний вибір!");
+            Console.WriteLine("РќРµРІС–СЂРЅРёР№ РІРёР±С–СЂ!");
             break;
     }
-}
-      
+}*/
 
+var computerRepo = new Repository<ComputerModel>(dbContext);
+var computerCrudService = new CrudService<ComputerModel>(computerRepo);
+
+var pc = new ComputerModel
+{
+    Name = "Gaming PC",
+    RAM = 32,
+    Storage = 1000,
+    CPU = new CPUModel
+    {
+        Brand = "Intel",
+        Model = "Core i7-12700K",
+        Cores = 12,
+        Threads = 20,
+        Frequency = 3.6,
+        Type = "Processor"
+    },
+    GPU = new GPUModel
+    {
+        Brand = "NVIDIA",
+        Model = "RTX 3080",
+        VRAM = 10,
+        MemoryType = "GDDR6X",
+        CoreClock = 1710,
+        Type = "Graphic Card"
+    },
+    Software = new SoftwareModel
+    {
+        OS = "Windows",
+        OSVersion = "11",
+        Antivirus = "Kaspersky"
+    },
+    Peripheries = new List<PeripheryModel>
+    {
+        new() { DeviceType="Keyboard", Brand="Logitech", ConnectionType="USB" },
+        new() { DeviceType="Mouse", Brand="Razer", ConnectionType="Wireless" }
+    }
+};
+
+
+await computerCrudService.CreateAsyncDB(pc);
+
+var savedComputers = await computerCrudService.ReadAllAsyncDB();
+
+Console.WriteLine("РЎРїРёСЃРѕРє РєРѕРјРї'СЋС‚РµСЂС–РІ Сѓ Р±Р°Р·С–:");
+
+
+    Console.WriteLine($"- {pc.Name}, RAM={pc.RAM}GB, Storage={pc.Storage}GB");
+
+    if (pc.CPU != null)
+    {
+        Console.WriteLine($"  CPU: {pc.CPU.Brand} {pc.CPU.Model}, {pc.CPU.Cores} cores, {pc.CPU.Frequency}GHz");
+    }
+
+    if (pc.GPU != null)
+    {
+        Console.WriteLine($"  GPU: {pc.GPU.Brand} {pc.GPU.Model}, {pc.GPU.VRAM}GB {pc.GPU.MemoryType}, CoreClock={pc.GPU.CoreClock}MHz");
+    }
+
+    if (pc.Software != null)
+    {
+        Console.WriteLine($"  OS: {pc.Software.OS} {pc.Software.OSVersion}, Antivirus: {pc.Software.Antivirus}");
+    }
+
+    if (pc.Peripheries != null && pc.Peripheries.Any())
+    {
+        Console.WriteLine("  РџРµСЂРёС„РµСЂС–СЏ:");
+        foreach (var p in pc.Peripheries)
+        {
+            Console.WriteLine($"    - {p.DeviceType} ({p.Brand}, {p.ConnectionType})");
+        }
+    }
+
+    Console.WriteLine();

@@ -2,6 +2,9 @@
 namespace Setup.Console
 {
     using Setup.Common;
+    using Setup.Infrastructure;
+    using Setup.Infrastructure.Services;
+    using Setup.Infrastructure.Models;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -9,10 +12,13 @@ namespace Setup.Console
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using Setup.Infrastructure.Repositories;
+
+
     public class ConsoleService
     {
-            //Створення комп'ютера
-            public async Task CreateComputerAsync(ICrudServiceAsync<Computer> service)
+        //Створення комп'ютера
+        public async Task CreateComputerAsync(ICrudServiceAsync<Computer> service)
             {
                 Console.Write("Введіть назву комп'ютера: ");
                 string name = Console.ReadLine();
