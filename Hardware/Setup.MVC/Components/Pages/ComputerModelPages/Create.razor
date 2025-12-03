@@ -1,0 +1,54 @@
+﻿@page "/computermodels/create"
+@using Microsoft.EntityFrameworkCore
+@using Setup.Infrastructure.Models
+@inject IDbContextFactory<Setup.Infrastructure.SetupContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>ComputerModel</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="ComputerModel" OnValidSubmit="AddComputerModel" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="ComputerModel.Name" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => ComputerModel.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="ram" class="form-label">RAM:</label> 
+                <InputNumber id="ram" @bind-Value="ComputerModel.RAM" class="form-control" /> 
+                <ValidationMessage For="() => ComputerModel.RAM" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="storage" class="form-label">Storage:</label> 
+                <InputNumber id="storage" @bind-Value="ComputerModel.Storage" class="form-control" /> 
+                <ValidationMessage For="() => ComputerModel.Storage" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/computermodels">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private ComputerModel ComputerModel { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddComputerModel()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Computers.Add(ComputerModel);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/computermodels");
+    }
+}

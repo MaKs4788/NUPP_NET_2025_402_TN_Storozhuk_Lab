@@ -1,0 +1,38 @@
+﻿@page "/computermodels"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Setup.Infrastructure.Models
+@using Setup.Infrastructure
+@implements IAsyncDisposable
+@inject IDbContextFactory<Setup.Infrastructure.SetupContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="computermodels/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Computers">
+    <PropertyColumn Property="computermodel => computermodel.Name" />
+    <PropertyColumn Property="computermodel => computermodel.RAM" />
+    <PropertyColumn Property="computermodel => computermodel.Storage" />
+
+    <TemplateColumn Context="computermodel">
+        <a href="@($"computermodels/edit?id={computermodel.Id}")">Edit</a> |
+        <a href="@($"computermodels/details?id={computermodel.Id}")">Details</a> |
+        <a href="@($"computermodels/delete?id={computermodel.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private SetupContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
