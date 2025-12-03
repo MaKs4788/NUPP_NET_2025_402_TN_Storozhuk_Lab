@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Setup.Infrastructure;
+using Setup.Infrastructure.Models;
 using Setup.Infrastructure.Repositories;
 using Setup.Infrastructure.Services;
 
@@ -21,6 +22,8 @@ builder.Services.AddDbContextFactory<SetupContext>(options =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(ICrudServiceAsyncDB<>), typeof(CrudService<>));
+builder.Services.AddScoped<ICrudServiceAsyncDB<ComputerModel>, ComputerService>();
+
 
 var app = builder.Build();
 
