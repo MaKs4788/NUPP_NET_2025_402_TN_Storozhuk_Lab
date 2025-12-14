@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="3.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Hardware.Common\Setup.Common.csproj" />
+    <ProjectReference Include="..\Setup.Infrastructure\Setup.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -23,7 +23,6 @@ namespace Setup.Common
                 await service.CreateAsync(comp);
             });
         }
-
         // Метод створення статистики
         public static void ComputeStatistics(IEnumerable<Computer> computers)
         {

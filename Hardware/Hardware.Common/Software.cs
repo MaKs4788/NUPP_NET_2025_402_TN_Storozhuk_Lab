@@ -59,7 +59,5 @@ namespace Setup.Common
                 OSVersion = versions[rand.Next(versions.Length)]
             };
         }
-
-
     }
 }
