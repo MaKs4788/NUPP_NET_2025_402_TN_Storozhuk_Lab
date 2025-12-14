@@ -1,14 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Setup.Infrastructure.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Setup.Infrastructure
 {
-    public class SetupContext : DbContext
+    public class SetupContext : IdentityDbContext<UserModel>
     {
         public DbSet<ComputerModel> Computers { get; set; }
         public DbSet<CPUModel> CPUs { get; set; }
@@ -22,12 +18,13 @@ namespace Setup.Infrastructure
         {
         }
 
-      
         public SetupContext() { }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+         
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<HardwareModel>().UseTptMappingStrategy();
 
             modelBuilder.Entity<ComputerModel>(entity =>
@@ -58,4 +55,3 @@ namespace Setup.Infrastructure
         }
     }
 }
-
