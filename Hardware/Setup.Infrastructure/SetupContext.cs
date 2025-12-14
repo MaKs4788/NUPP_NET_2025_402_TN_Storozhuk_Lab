@@ -25,17 +25,6 @@ namespace Setup.Infrastructure
       
         public SetupContext() { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                var dbFileName = "SetupDatabase.db";
-                var dbPath = Path.Combine(AppContext.BaseDirectory, dbFileName);
-
-                optionsBuilder.UseSqlite($"Data Source={dbPath}");
-                Console.WriteLine("БД використовується тут: " + dbPath);
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

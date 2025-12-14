@@ -1,0 +1,6 @@
+@Setup.REST_HostAddress = http://localhost:5266
+
+GET {{Setup.REST_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
