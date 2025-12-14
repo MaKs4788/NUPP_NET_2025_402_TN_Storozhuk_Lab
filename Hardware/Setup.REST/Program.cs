@@ -13,10 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(port));
-});
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -59,6 +58,7 @@ builder.Services.AddDbContext<SetupContext>(options =>
     options.UseSqlite("Data Source=setup.db");
 });
 
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(ICrudServiceAsyncDB<>), typeof(CrudService<>));
 builder.Services.AddScoped<ICrudServiceAsyncDB<ComputerModel>, ComputerService>();
@@ -67,6 +67,7 @@ builder.Services.AddScoped<ICrudServiceAsyncDB<ComputerModel>, ComputerService>(
 builder.Services.AddIdentity<UserModel, IdentityRole>()
     .AddEntityFrameworkStores<SetupContext>()
     .AddDefaultTokenProviders();
+
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
@@ -107,7 +108,6 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<UserModel>>();
 
     string[] roles = { "Admin", "Manager", "User" };
-
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
@@ -118,7 +118,6 @@ using (var scope = app.Services.CreateScope())
 
     var adminEmail = "admin@example.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
     if (adminUser == null)
     {
         adminUser = new UserModel
@@ -134,11 +133,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Setup REST API V1");
+    c.RoutePrefix = ""; 
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
