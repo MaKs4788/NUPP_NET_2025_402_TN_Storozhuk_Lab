@@ -13,15 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(int.Parse(port)); 
+    options.ListenAnyIP(int.Parse(port));
 });
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -62,15 +59,14 @@ builder.Services.AddDbContext<SetupContext>(options =>
     options.UseSqlite("Data Source=setup.db");
 });
 
-
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(ICrudServiceAsyncDB<>), typeof(CrudService<>));
 builder.Services.AddScoped<ICrudServiceAsyncDB<ComputerModel>, ComputerService>();
 
+
 builder.Services.AddIdentity<UserModel, IdentityRole>()
     .AddEntityFrameworkStores<SetupContext>()
     .AddDefaultTokenProviders();
-
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
@@ -96,7 +92,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-
 
 var app = builder.Build();
 
@@ -144,8 +139,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();
