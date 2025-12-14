@@ -6,6 +6,7 @@ namespace Setup.Infrastructure
 {
     public class SetupContext : IdentityDbContext<UserModel>
     {
+        public string DbPath { get; private set; }
         public DbSet<ComputerModel> Computers { get; set; }
         public DbSet<CPUModel> CPUs { get; set; }
         public DbSet<GPUModel> GPUs { get; set; }
@@ -19,6 +20,19 @@ namespace Setup.Infrastructure
         }
 
         public SetupContext() { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var dbPath = Path.Combine(AppContext.BaseDirectory, "SetupDatabase.db");
+                optionsBuilder.UseSqlite($"Data Source={dbPath}");
+            }
+        }
+
+
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

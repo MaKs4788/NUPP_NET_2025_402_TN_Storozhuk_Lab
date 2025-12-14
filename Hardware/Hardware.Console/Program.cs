@@ -128,9 +128,11 @@ await computerCrudService.CreateAsyncDB(pc);
 var savedComputers = await computerCrudService.ReadAllAsyncDB();
 
 Console.WriteLine("Список комп'ютерів у базі:");
+Console.WriteLine($"SQLite DB path: {dbContext.DbPath}");
 
 
-    Console.WriteLine($"- {pc.Name}, RAM={pc.RAM}GB, Storage={pc.Storage}GB");
+
+Console.WriteLine($"- {pc.Name}, RAM={pc.RAM}GB, Storage={pc.Storage}GB");
 
     if (pc.CPU != null)
     {
