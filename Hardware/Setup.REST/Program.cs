@@ -11,11 +11,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Setup REST API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Setup REST API",
+        Version = "v1"
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -24,7 +29,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "¬вед≥ть JWT токен у формат≥: Bearer {token}"
+        Description = "Bearer {token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -43,14 +48,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
-builder.Services.AddDbContextFactory<SetupContext>(options =>
+builder.Services.AddDbContext<SetupContext>(options =>
 {
-    var dbPath = @"D:\lb1 net\NUPP_NET_2025_402_TN_Storozhuk_Lab\Hardware\Hardware.Console\bin\Debug\net8.0\SetupDatabase.db";
-    options.UseSqlite($"Data Source={dbPath}");
+    options.UseSqlite("Data Source=setup.db");
 });
 
-
+// -------------------- DI --------------------
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(ICrudServiceAsyncDB<>), typeof(CrudService<>));
 builder.Services.AddScoped<ICrudServiceAsyncDB<ComputerModel>, ComputerService>();
@@ -62,6 +65,7 @@ builder.Services.AddIdentity<UserModel, IdentityRole>()
 
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,7 +81,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]))
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Secret"]!)
+        )
     };
 });
 
@@ -85,32 +91,42 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserModel>>();
+    var services = scope.ServiceProvider;
 
-    string[] roles = new[] { "Admin", "Manager", "User" };
+    var context = services.GetRequiredService<SetupContext>();
+    await context.Database.MigrateAsync();
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<UserModel>>();
+
+    string[] roles = { "Admin", "Manager", "User" };
 
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
+        {
             await roleManager.CreateAsync(new IdentityRole(role));
+        }
     }
 
-    var defaultAdminEmail = "admin@example.com";
-    var defaultAdmin = await userManager.FindByEmailAsync(defaultAdminEmail);
-    if (defaultAdmin == null)
+    var adminEmail = "admin@example.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser == null)
     {
-        defaultAdmin = new UserModel
+        adminUser = new UserModel
         {
-            UserName = defaultAdminEmail,
-            Email = defaultAdminEmail,
+            UserName = adminEmail,
+            Email = adminEmail,
             FirstName = "Admin",
             LastName = "User"
         };
-        await userManager.CreateAsync(defaultAdmin, "Admin123!");
-        await userManager.AddToRoleAsync(defaultAdmin, "Admin");
+
+        await userManager.CreateAsync(adminUser, "Admin123!");
+        await userManager.AddToRoleAsync(adminUser, "Admin");
     }
 }
 
@@ -120,7 +136,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
