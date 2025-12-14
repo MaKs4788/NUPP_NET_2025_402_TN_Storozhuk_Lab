@@ -1,35 +1,27 @@
-# =========================
-# 1. Build stage
-# =========================
+# ===== BUILD STAGE =====
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Копіюємо csproj і відновлюємо залежності
-COPY *.sln .
-COPY Setup.Infrastructure/*.csproj ./Setup.Infrastructure/
-COPY Setup.REST/*.csproj ./Setup.REST/
+# копіюємо тільки потрібні csproj
+COPY Setup.Infrastructure/Setup.Infrastructure.csproj Setup.Infrastructure/
+COPY Setup.REST/Setup.REST.csproj Setup.REST/
 
-RUN dotnet restore
+# restore тільки REST-проєкту
+RUN dotnet restore Setup.REST/Setup.REST.csproj
 
-# Копіюємо увесь код
-COPY Setup.Infrastructure/. ./Setup.Infrastructure/
-COPY Setup.REST/. ./Setup.REST/
+# копіюємо код
+COPY Setup.Infrastructure/ Setup.Infrastructure/
+COPY Setup.REST/ Setup.REST/
 
-# Build проекту
-WORKDIR /app/Setup.REST
-RUN dotnet publish -c Release -o /app/publish
+# build
+RUN dotnet publish Setup.REST/Setup.REST.csproj -c Release -o /app/publish
 
-# =========================
-# 2. Runtime stage
-# =========================
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# ===== RUNTIME STAGE =====
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
-# Копіюємо файли з попередньої стадії
+ENV ASPNETCORE_URLS=http://+:8080
+
 COPY --from=build /app/publish .
 
-# Виставляємо порт (за потреби)
-EXPOSE 5000
-
-# Вказуємо команду запуску
 ENTRYPOINT ["dotnet", "Setup.REST.dll"]
