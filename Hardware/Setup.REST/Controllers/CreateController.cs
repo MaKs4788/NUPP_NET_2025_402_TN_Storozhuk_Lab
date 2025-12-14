@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Setup.Infrastructure.Models;
 using Setup.Infrastructure.Services;
 using Setup.REST.Models;
@@ -18,11 +19,10 @@ public class ComputersController : ControllerBase
     public async Task<ActionResult<IEnumerable<ComputerDto>>> GetAll()
     {
         var pcs = await _service.ReadAllAsyncDB();
-
         var result = pcs.Select(pc => MapToDto(pc));
         return Ok(result);
     }
-  
+
     [HttpGet("{id}")]
     public async Task<ActionResult<ComputerDto>> Get(Guid id)
     {
@@ -36,8 +36,8 @@ public class ComputersController : ControllerBase
             return NotFound();
         }
     }
-
     [HttpPost]
+    [Authorize(Roles = "Manager,Admin")]
     public async Task<ActionResult> Create([FromBody] CreateComputerDto dto)
     {
         if (dto == null) return BadRequest();
@@ -49,6 +49,7 @@ public class ComputersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Manager,Admin")]
     public async Task<ActionResult> Update(Guid id, [FromBody] CreateComputerDto dto)
     {
         if (dto == null) return BadRequest();
@@ -109,6 +110,7 @@ public class ComputersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(Guid id)
     {
         try

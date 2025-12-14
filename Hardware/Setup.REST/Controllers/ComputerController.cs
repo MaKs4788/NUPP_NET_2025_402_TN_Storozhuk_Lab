@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Setup.Infrastructure.Models;
 using Setup.Infrastructure.Services;
 using Setup.REST.Models;
@@ -13,7 +14,6 @@ public class SimpleComputersController : ControllerBase
     {
         _service = service;
     }
-
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<LegacyComputerDto>>> GetAll()
@@ -51,7 +51,9 @@ public class SimpleComputersController : ControllerBase
         }
     }
 
+
     [HttpPost]
+    [Authorize(Roles = "Manager,Admin")]
     public async Task<ActionResult> Create([FromBody] LegacyComputerDto dto)
     {
         if (dto == null) return BadRequest();
@@ -69,8 +71,8 @@ public class SimpleComputersController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = model.Id }, dto);
     }
 
-
     [HttpPut("{id}")]
+    [Authorize(Roles = "Manager,Admin")]
     public async Task<ActionResult> Update(Guid id, [FromBody] LegacyComputerDto dto)
     {
         if (dto == null) return BadRequest();
@@ -91,8 +93,8 @@ public class SimpleComputersController : ControllerBase
         }
     }
 
-
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(Guid id)
     {
         try

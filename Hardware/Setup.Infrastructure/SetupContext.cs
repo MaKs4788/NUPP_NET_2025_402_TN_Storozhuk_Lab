@@ -1,15 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Setup.Infrastructure.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Setup.Infrastructure
 {
-    public class SetupContext : DbContext
+    public class SetupContext : IdentityDbContext<UserModel>
     {
+        public string DbPath { get; private set; }
         public DbSet<ComputerModel> Computers { get; set; }
         public DbSet<CPUModel> CPUs { get; set; }
         public DbSet<GPUModel> GPUs { get; set; }
@@ -22,12 +19,26 @@ namespace Setup.Infrastructure
         {
         }
 
-      
         public SetupContext() { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var dbPath = Path.Combine(AppContext.BaseDirectory, "SetupDatabase.db");
+                optionsBuilder.UseSqlite($"Data Source={dbPath}");
+            }
+        }
+
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+         
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<HardwareModel>().UseTptMappingStrategy();
 
             modelBuilder.Entity<ComputerModel>(entity =>
@@ -58,4 +69,3 @@ namespace Setup.Infrastructure
         }
     }
 }
-
